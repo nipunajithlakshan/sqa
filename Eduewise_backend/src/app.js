@@ -3,6 +3,7 @@ import userRouter from "./api/routers/userRouter.js";
 import projectRouter from "./api/routers/projectRouter.js";
 import teamRouter from "./api/routers/teamRouter.js";
 import semesterRouter from "./api/routers/semesterRouter.js";
+import paymentRouter from "./api/routers/paymentRouter.js";
 import cors from "cors";
 import multer from "multer";
 import path from "path";
@@ -36,5 +37,6 @@ app.use("/admin/user", userRouter);
 app.use("/user", projectRouter);
 app.use("/admin/team", teamRouter);
 app.use("/admin/semester", semesterRouter);
+app.use("/admin/payment", paymentRouter);
 
 export default app;

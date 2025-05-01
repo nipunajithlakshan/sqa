@@ -1,5 +1,5 @@
 import express from "express";
-import SemesterCtrl from "../controllers/SemesterCtrl.js";
+import PaymentCtrl from "../controllers/PaymentCtrl.js";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -55,8 +55,8 @@ const handleMulterError = (err, req, res, next) => {
   next(err);
 };
 
-router.post("/register", SemesterCtrl.registerSemester);
-router.get("/details", SemesterCtrl.getSemesterDetails);
-router.post("/upload-payment-details", upload.single('paymentSlip'), handleMulterError, SemesterCtrl.uploadPaymentSlip);
+// Routes
+router.post("/upload", upload.single('paymentSlip'), handleMulterError, PaymentCtrl.uploadPaymentDetails);
+router.get("/details/:studentId", PaymentCtrl.getPaymentDetails);
 
 export default router; 
