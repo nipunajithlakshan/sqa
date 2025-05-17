@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Router, Routes } from "react-router-dom";
+import { Route, Router, Routes, Navigate } from "react-router-dom";
 
 import AboutUs from "../pages/section2/AboutUs";
 import Home from "../pages/section1/Home";
@@ -14,6 +14,7 @@ import Registration from "../pages/registration/Registration";
 import GroupRegistration from "../pages/projects/GroupRegistration";
 import DashboardLayout from "../pages/dashbord/DashboardLayout";
 import SemesterRegistration from "../pages/registration/SemesterRegistration";
+import PaymentSlipUpload from '../pages/payments/PaymentSlipUpload';
 
 import Assignment from "../pages/projects/Assignment";
 
@@ -40,6 +41,8 @@ const Routerset = () => {
         <Route path="semester-registration" element={<SemesterRegistration />} />
         <Route path="assignment" element={<Assignment />} />
       </Route>
+      <Route path="/payment-upload" element={<PaymentSlipUpload />} />
+      <Route path="*" element={<Navigate to="/dashboard/semester-registration" replace />} />
     </Routes>
   );
 };

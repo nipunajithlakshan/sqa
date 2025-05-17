@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Form, Input, Select, Button, Modal, Card, Typography, Table, Tag, message, Upload, App, Space, Divider, Row, Col, Statistic } from "antd";
 import { UploadOutlined, UserOutlined, IdcardOutlined, CalendarOutlined, MailOutlined, PhoneOutlined, BookOutlined,  CheckCircleOutlined, CloseCircleOutlined, InfoCircleOutlined, ReloadOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -185,6 +186,7 @@ const SemesterRegistration = () => {
   const [loading, setLoading] = useState(false);
   const [showPaymentNotification, setShowPaymentNotification] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
+  const navigate = useNavigate();
 
   const fetchRegistrations = async () => {
     try {
@@ -260,10 +262,12 @@ const SemesterRegistration = () => {
       );
 
       if (response.data.success) {
-        messageApi.success("Semester Registration successful! Please upload your payment slip.");
-        handleCancel();
-        fetchRegistrations();
-        setShowPaymentNotification(true);
+        messageApi.success("Semester Registration successful!");
+        navigate('/payment-upload', { 
+          state: { 
+            registrationDetails: response.data.data 
+          } 
+        });
       } else {
         messageApi.error("Registration failed: " + response.data.message);
       }
@@ -512,35 +516,7 @@ const SemesterRegistration = () => {
         </Col>
       </Row>
 
-      {showPaymentNotification && (
-        <div className="payment-notification">
-          <Row justify="space-between" align="middle">
-            <Col>
-              <Title level={4} style={{ color: '#cf1322', margin: 0 }}>
-                Upload Your Payment Slip
-              </Title>
-              <Text style={{ color: '#cf1322' }}>
-                Please upload your payment slip after completing the registration process.
-              </Text>
-            </Col>
-            <Col>
-              <Upload
-                customRequest={({ file, onSuccess, onError }) => {
-                  handleUpload(file)
-                    .then(() => onSuccess())
-                    .catch(() => onError());
-                }}
-                showUploadList={false}
-              >
-                <Button type="primary" danger icon={<UploadOutlined />} size="large">
-                  Upload Payment Slip
-                </Button>
-              </Upload>
-            </Col>
-          </Row>
-        </div>
-      )}
-
+      
       <Card className="registration-table">
         <div style={{ 
           display: 'flex', 

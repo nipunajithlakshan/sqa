@@ -1,20 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Table } from "antd";
 import axios from "axios";
-import {
-  PlusOutlined,
-  UserOutlined,
-  IdcardOutlined,
-  TeamOutlined,
-  BookOutlined,
-  CrownOutlined,
-} from "@ant-design/icons";
+import { PlusOutlined, UserOutlined, IdcardOutlined, TeamOutlined, BookOutlined, CrownOutlined } from '@ant-design/icons';
+import { useNavigate } from "react-router-dom";
+import { message } from "antd";
 
 const GroupRegistration = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formValues, setFormValues] = useState({});
   const [teamData, setTeamData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchTeamDetails = async () => {
@@ -44,36 +40,35 @@ const GroupRegistration = () => {
     setFormValues({ ...formValues, [e.target.name]: e.target.value });
   };
 
-  const onFinish = async (e) => {
-    e.preventDefault();
-    const teamMembers = [1, 2, 3, 4]
-      .map((i) => ({
-        name: formValues[`teamMember${i}Name`],
-        studentId: formValues[`teamMember${i}Id`],
-      }))
-      .filter((m) => m.name && m.studentId);
+  const onFinish = async (values) => {
     try {
       const response = await axios.post(
-        "http://localhost:3001/admin/team/register",
+        "http://localhost:3001/admin/semester/register",
         {
-          teamMembers,
-          moduleName: formValues.moduleName,
+          ...values,
+          selectedModules,
+          totalFee
         }
       );
+
       if (response.data.success) {
-        alert("Group Registration successful!");
-        handleCancel();
-        const updatedResponse = await axios.get(
-          "http://localhost:3001/admin/team/details"
-        );
-        if (updatedResponse.data.success) {
-          setTeamData(updatedResponse.data.data);
-        }
+        message.success("Semester Registration successful!");
+        // Redirect to payment page with registration details
+        navigate('/payment-upload', { 
+          state: { 
+            registrationDetails: response.data.data 
+          } 
+        });
       } else {
-        alert("Registration failed: " + response.data.message);
+        message.error("Registration failed: " + response.data.message);
       }
     } catch (error) {
-      alert("Something went wrong during registration.");
+      console.error("Registration error:", error);
+      if (error.code === 'ERR_NETWORK') {
+        message.error("Could not connect to the server. Please check if the backend is running.");
+      } else {
+        message.error("Something went wrong during registration.");
+      }
     }
   };
 

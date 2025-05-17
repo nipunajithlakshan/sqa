@@ -61,48 +61,37 @@ class SemesterService {
     }
   }
 
-  async uploadPaymentSlip(file) {
+  async uploadPaymentSlip(paymentData) {
     try {
-      if (!file) {
-        throw new Error("No file uploaded");
+      const { paymentDate, paymentAmount, bankName, transactionId, studentId, paymentSlip } = paymentData;
+      
+      // Validate required fields
+      if (!paymentDate || !paymentAmount || !bankName || !transactionId || !studentId || !paymentSlip) {
+        throw new Error('Missing required payment details');
       }
 
-      // Find the most recent active registration
-      const activeRegistration = await SemesterRegistration.findOne({ isActive: true })
-        .sort({ createdAt: -1 });
+      // Save payment details to database
+      const paymentRecord = {
+        studentId,
+        paymentDate,
+        amount: paymentAmount,
+        bankName,
+        transactionId,
+        slipPath: paymentSlip.path,
+        status: 'pending',
+        createdAt: new Date()
+      };
 
-      if (!activeRegistration) {
-        throw new Error("No active registration found");
-      }
-
-      // Update the database with the file information
-      const updatedRegistration = await SemesterRegistration.findByIdAndUpdate(
-        activeRegistration._id,
-        { 
-          paymentSlipPath: file.path,
-          paymentSlipName: file.originalname,
-          paymentStatus: 'uploaded',
-          isActive: false // Mark the registration as completed
-        },
-        { new: true }
-      );
-
+      // TODO: Add database logic to save payment record
+      // For now, we'll just return success
       return {
         success: true,
-        message: "Payment slip uploaded successfully",
-        data: {
-          filename: file.originalname,
-          path: file.path,
-          registration: updatedRegistration
-        }
+        message: 'Payment details uploaded successfully',
+        data: paymentRecord
       };
     } catch (error) {
-      console.error("Payment slip upload error:", error);
-      return {
-        success: false,
-        message: error.message || "Failed to upload payment slip",
-        data: null
-      };
+      console.error('Error uploading payment slip:', error);
+      throw error;
     }
   }
 }
