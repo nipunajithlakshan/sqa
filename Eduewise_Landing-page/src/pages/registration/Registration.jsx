@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Form, Input } from "antd";
 import RegisterImage from "../../assets/image/loginImage.jpeg";
 import axios from "axios";
@@ -22,6 +22,15 @@ const validateMessages = {
 
 const Registration = () => {
   const navigate = useNavigate();
+  const [successMessage, setSuccesMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
+
+  const clearMessages = () => {
+    setTimeout(() => {
+      setSuccesMessage(null);
+      setErrorMessage(null);
+    }, 2000);
+  };
 
   const onFinish = async (values) => {
     try {
@@ -35,14 +44,22 @@ const Registration = () => {
       );
 
       if (response.data.success) {
-        alert("Registration successful!");
-        navigate("/login"); // ✅ Redirect after success
+        // alert("Registration successful!");
+        setSuccesMessage("Registration successfully.");
+        setErrorMessage(null);
+        clearMessages();
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
       } else {
         alert("Registration failed: " + response.data.message);
       }
     } catch (error) {
       console.error("Registration error:", error);
-      alert("Something went wrong during registration.");
+      console.error("Registration error:", error);
+      setErrorMessage("Registration successfully.");
+      setSuccesMessage(null);
+      clearMessages();
     }
   };
 
@@ -59,6 +76,17 @@ const Registration = () => {
           Sign up
         </h2>
 
+        {successMessage && (
+          <div className="max-w-md mb-2 px-4 py-3 text-green-800 bg-green-100 border border-green-300 rounded-lg shadow-sm text-sm text-center mx-auto">
+            {successMessage}
+          </div>
+        )}
+        {errorMessage && (
+          <div className="max-w-md mb-2 px-4 py-3 text-red-800 bg-red-100 border border-red-300 rounded-lg shadow-sm text-sm text-center mx-auto">
+            {errorMessage}
+          </div>
+        )}
+
         <Form
           {...layout}
           name="nest-messages"
@@ -71,28 +99,28 @@ const Registration = () => {
             label="Username"
             rules={[{ required: true }]}
           >
-            <Input />
+            <Input placeholder="Username" />
           </Form.Item>
           <Form.Item
             name={["user", "firstName"]}
             label="First Name"
             rules={[{ required: true }]}
           >
-            <Input />
+            <Input placeholder="First Name" />
           </Form.Item>
           <Form.Item
             name={["user", "lastName"]}
             label="Last Name"
             rules={[{ required: true }]}
           >
-            <Input />
+            <Input placeholder="Last Name" />
           </Form.Item>
           <Form.Item
             name={["user", "email"]}
             label="Email"
             rules={[{ required: true }]}
           >
-            <Input />
+            <Input placeholder="Email" />
           </Form.Item>
           <Form.Item
             name={["user", "password"]}
